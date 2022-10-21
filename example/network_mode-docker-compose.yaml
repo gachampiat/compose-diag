@@ -1,0 +1,75 @@
+version: '2'
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+     - "3306:3306"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.5
+
+  mysql-slide:
+    container_name: mysql-slide
+    image: alpine
+    network_mode: service:mysql
+
+  apigw-tomcat:
+    container_name: apigw-tomcat
+    build: tomcat/.
+    ports:
+     - "8080:8080"
+     - "8009:8009"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.6
+      internal:
+        ipv4_address: 10.6.0.7
+    depends_on:
+     - mysql
+
+  postgresql:
+    container_name: postgresql
+    image: postgresql:latest
+    restart: always
+    networks:
+      internal:
+        ipv4_address: 10.6.0.5
+
+
+  slide:
+    container_name: slide
+    image: alpine
+    network_mode: service:apigw-tomcat
+
+
+  slide2:
+    container_name: slide2
+    image: alpine
+    network_mode: service:apigw-tomcat
+
+
+  host:
+    container_name: host
+    image: alpine
+    network_mode: host
+
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
+
+  internal:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.6.0.0/16
+         gateway: 10.6.0.1
