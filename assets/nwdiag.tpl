@@ -1,6 +1,6 @@
 nwdiag {
-{{ range $key, $Subnet := . }}
-network {{ slice $Subnet.Network.Name  1 }} {
+{{ range $name, $Subnet := .Configuration }}
+network {{ $name }} {
 {{ $ipam := $Subnet.Network.Ipam.Config }}
 {{ if $ipam }}
 	address = " {{ (index $ipam 0).Subnet}}"
@@ -15,6 +15,17 @@ network {{ slice $Subnet.Network.Name  1 }} {
 	{{ end }}
 	;
 {{ end }}
+}
+{{ end }}
+
+{{ range $name, $services := .Groups }}
+network {{ $name }}-netns {
+	address = "127.0.0.1"
+
+	{{ $name }};
+	{{ range $index, $service := $services}}
+		{{ $service}};
+	{{ end }}
 }
 {{ end }}
 }
