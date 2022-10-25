@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	message, err := ioutil.ReadFile("example/network_mode-docker-compose.yaml")
+	message, err := ioutil.ReadFile("example/docker-compose-volume.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}

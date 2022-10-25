@@ -3,6 +3,7 @@ package parser
 import (
 	"log"
 
+	"github.com/gachampiat/compose-diag/pkg/mermaid"
 	"github.com/gachampiat/compose-diag/pkg/nwdiag"
 
 	"github.com/compose-spec/compose-go/loader"
@@ -17,7 +18,6 @@ func getSection(config map[string]interface{}, key string) map[string]interface{
 	return section.(map[string]interface{})
 }
 
-
 func Parse(content []byte) {
 	project, err := loader.Load(types.ConfigDetails{
 		ConfigFiles: []types.ConfigFile{
@@ -29,4 +29,5 @@ func Parse(content []byte) {
 	}
 
 	nwdiag.Create(project)
+	mermaid.Create(project)
 }
