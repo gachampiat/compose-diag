@@ -3,6 +3,8 @@
 
 ## Example
 
+### Network
+
 #### docker-compose.yaml
 
 ![Simple docker-compose](example/docker-compose.png)
@@ -17,3 +19,10 @@
 Support of options : network_mode
 
 ![Support of options : network_mode](example/network_mode-docker-compose.png)
+
+
+### Volumes
+
+#### docker-compose-volume.yaml
+
+![Volumes schema](example/docker-compose-volume.png)
