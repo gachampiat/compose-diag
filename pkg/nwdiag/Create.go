@@ -1,10 +1,10 @@
 package nwdiag
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"text/template"
 
@@ -21,27 +21,25 @@ type Subnets struct {
 	Groups        map[string][]string
 }
 
-func Create(project *types.Project) error {
-
-	process(sort(project))
-	return nil
+func Create(project *types.Project, templatePath string) (bytes.Buffer, error) {
+	return process(sort(project), templatePath)
 }
 
-func process(subnets Subnets) {
-	data, err := ioutil.ReadFile("assets/nwdiag.tpl")
+func process(subnets Subnets, templatePath string) (bytes.Buffer, error) {
+	var buf bytes.Buffer
+
+	data, err := ioutil.ReadFile(templatePath)
 	if err != nil {
-		log.Panicf("failed reading data from file: %s", err)
+		return buf, err
 	}
 
 	tn, err := template.New("template").Parse(string(data))
 	if err != nil {
-		log.Panic(err)
+		return buf, err
 	}
 
-	err = tn.Execute(os.Stdout, subnets)
-	if err != nil {
-		log.Panic(err)
-	}
+	err = tn.Execute(&buf, subnets)
+	return buf, err
 }
 
 func sort(project *types.Project) Subnets {
