@@ -1,9 +1,8 @@
 package mermaid
 
 import (
+	"bytes"
 	"io/ioutil"
-	"log"
-	"os"
 	"text/template"
 
 	"github.com/compose-spec/compose-go/types"
@@ -14,12 +13,8 @@ type Volume struct {
 	ServiceName  string
 }
 
-func Create(project *types.Project) error {
-	var err error
-
-	process(sort(project))
-
-	return err
+func Create(project *types.Project, templatePath string) (bytes.Buffer, error) {
+	return process(sort(project), templatePath)
 }
 
 func sort(project *types.Project) map[string][]Volume {
@@ -40,23 +35,22 @@ func sort(project *types.Project) map[string][]Volume {
 		}
 	}
 
-	log.Println(volumes)
 	return volumes
 }
 
-func process(volumes map[string][]Volume) {
-	data, err := ioutil.ReadFile("assets/mermaid.tpl")
+func process(volumes map[string][]Volume, templatePath string) (bytes.Buffer, error) {
+	var buf bytes.Buffer
+
+	data, err := ioutil.ReadFile(templatePath)
 	if err != nil {
-		log.Panicf("failed reading data from file: %s", err)
+		return buf, err
 	}
 
 	tn, err := template.New("template").Parse(string(data))
 	if err != nil {
-		log.Panic(err)
+		return buf, err
 	}
 
-	err = tn.Execute(os.Stdout, volumes)
-	if err != nil {
-		log.Panic(err)
-	}
+	err = tn.Execute(&buf, volumes)
+	return buf, err
 }

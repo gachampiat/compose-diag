@@ -1,10 +1,7 @@
 package parser
 
 import (
-	"log"
-
-	"github.com/gachampiat/compose-diag/pkg/mermaid"
-	"github.com/gachampiat/compose-diag/pkg/nwdiag"
+	"io/ioutil"
 
 	"github.com/compose-spec/compose-go/loader"
 	"github.com/compose-spec/compose-go/types"
@@ -18,16 +15,20 @@ func getSection(config map[string]interface{}, key string) map[string]interface{
 	return section.(map[string]interface{})
 }
 
-func Parse(content []byte) {
+func Parser(content []byte) (*types.Project, error) {
 	project, err := loader.Load(types.ConfigDetails{
 		ConfigFiles: []types.ConfigFile{
 			{Filename: "filename.yml", Content: content},
 		},
 	})
-	if err != nil {
-		log.Panic(err)
-	}
 
-	nwdiag.Create(project)
-	mermaid.Create(project)
+	return project, err
+}
+
+func Parse(filePath string) (*types.Project, error) {
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return Parser(content)
 }
