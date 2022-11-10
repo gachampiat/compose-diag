@@ -34,7 +34,7 @@ var networkCmd = &cobra.Command{
 		log.Println("Creating nwdiag.....")
 		buf, err := nwdiag.Create(project, templateFileAbs)
 		if err != nil {
-			log.Fatalf("An error appears during the conversion of docker-compose (%s) into nwdiag diagram.\n%s\n", sourceAbs, err)
+			log.Fatalf("An error appears during the conversion of docker-compose (%s) into nwdiag diagram with the template %s .\n%s\n", sourceAbs, templateFileAbs, err)
 
 		}
 
